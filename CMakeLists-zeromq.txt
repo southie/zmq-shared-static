@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 2.8.12)
+include(ExternalProject)
+project(@PROJECT_NAME@-deps)
+list(APPEND CMAKE_PREFIX_PATH @CMAKE_PREFIX_PATH@)
+find_package(ZeroMQ QUIET)
+if(@ZMQ_FORCE_BUILD@ OR NOT ZeroMQ_FOUND)
+	ExternalProject_Add(
+		ZeroMQ
+		GIT_REPOSITORY 	https://github.com/zeromq/libzmq.git
+		GIT_TAG	        @ZMQ_GIT_TAG@
+		
+		INSTALL_DIR 	@CMAKE_BINARY_DIR@/deps/@CMAKE_SYSTEM_NAME@
+		CMAKE_ARGS 		
+						-G "@CMAKE_GENERATOR@"
+						-DCMAKE_INSTALL_PREFIX=@CMAKE_BINARY_DIR@/deps/@CMAKE_SYSTEM_NAME@/		
+						-DCMAKE_SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
+						-DCMAKE_SYSTEM_VERSION=10.0
+						-DZMQ_BUILD_TESTS=false
+						-DENABLE_CPACK=false
+						-DENABLE_CURVE=false
+						-DENABLE_DRAFTS=false
+						-DBUILD_SHARED=true
+						-DBUILD_STATIC=true
+						-DCMAKE_PREFIX_PATH=@CMAKE_PREFIX_PATH@
+						"-DCMAKE_CXX_FLAGS=/DWINAPI_PARTITION_SYSTEM=1 /DWIN32_LEAN_AND_MEAN"
+		)
+
+endif()
